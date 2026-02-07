@@ -170,10 +170,25 @@ function BenefitsView({
         ))}
       </div>
 
+      {showGuestOption && onGuest && (
+        <button
+          onClick={onGuest}
+          className="w-full py-3.5 rounded-xl bg-accent font-medium text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all active:scale-[0.98] shadow-accent"
+          style={{ color: 'var(--s0)' }}
+        >
+          Try One Session Free
+        </button>
+      )}
+
+      <div className="flex items-center gap-3 my-4">
+        <div className="flex-1 h-px bg-s2" />
+        <span className="text-t4 text-xs uppercase tracking-wider">or</span>
+        <div className="flex-1 h-px bg-s2" />
+      </div>
+
       <button
         onClick={onSignUp}
-        className="w-full py-3.5 rounded-xl bg-accent font-medium text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all active:scale-[0.98] shadow-accent mb-3"
-        style={{ color: 'var(--s0)' }}
+        className="w-full py-3 rounded-xl bg-s2-40 border border-s2 text-t1 font-medium text-sm flex items-center justify-center gap-2 hover:bg-s2-60 transition-all active:scale-[0.98] mb-3"
       >
         <UserPlus className="w-4 h-4" />
         Sign Up Free
@@ -181,19 +196,10 @@ function BenefitsView({
 
       <button
         onClick={onLogin}
-        className="w-full py-3 rounded-xl bg-s2-40 border border-s2 text-t1 font-medium text-sm hover:bg-s2-60 transition-all active:scale-[0.98] mb-3"
+        className="w-full py-3 rounded-xl bg-s2-40 border border-s2 text-t1 font-medium text-sm hover:bg-s2-60 transition-all active:scale-[0.98]"
       >
         Already have an account? Sign In
       </button>
-
-      {showGuestOption && onGuest && (
-        <button
-          onClick={onGuest}
-          className="w-full py-2.5 text-t4 text-xs hover:text-t2 transition-colors"
-        >
-          Try one session as guest
-        </button>
-      )}
     </div>
   );
 }
