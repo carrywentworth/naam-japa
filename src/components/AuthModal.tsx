@@ -130,11 +130,11 @@ function AuthModal({
 }
 
 const BENEFITS = [
-  { icon: BarChart3, title: 'Track Your Practice', desc: 'See total sessions, repetitions, and time spent' },
-  { icon: Flame, title: 'Streak Tracking', desc: 'Build daily consistency with streak counts' },
-  { icon: Heart, title: 'Save Favorites', desc: 'Favorite chants synced across all your devices' },
-  { icon: Bell, title: 'Chanting Reminders', desc: 'Get notified at your preferred practice time' },
-  { icon: Eye, title: 'Session History', desc: 'Review all your past chanting sessions' },
+  { icon: BarChart3, title: 'Track Your Practice' },
+  { icon: Flame, title: 'Streak Tracking' },
+  { icon: Heart, title: 'Save Favorites' },
+  { icon: Bell, title: 'Chanting Reminders' },
+  { icon: Eye, title: 'Session History' },
 ];
 
 function BenefitsView({
@@ -161,14 +161,11 @@ function BenefitsView({
 
       <div className="space-y-3 mb-6">
         {BENEFITS.map(b => (
-          <div key={b.title} className="flex items-start gap-3 p-3 rounded-xl bg-s2-40 border border-s2">
-            <div className="w-9 h-9 rounded-lg bg-accent\/10 border border-accent\/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div key={b.title} className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-accent\/10 border border-accent\/20 flex items-center justify-center flex-shrink-0">
               <b.icon className="w-4 h-4 text-accent" />
             </div>
-            <div>
-              <p className="text-sm font-medium text-t0">{b.title}</p>
-              <p className="text-xs text-t3 mt-0.5">{b.desc}</p>
-            </div>
+            <p className="text-sm font-medium text-t0">{b.title}</p>
           </div>
         ))}
       </div>
