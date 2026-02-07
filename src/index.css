@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :root,
+  [data-theme="night"] {
+    --s0: #060f1d;
+    --s1: #0a1628;
+    --s2: 22, 42, 62;
+    --t0: #f0f4f8;
+    --t1: #d9e2ec;
+    --t2: #9fb3c8;
+    --t3: #627d98;
+    --t4: #486581;
+    --accent: #d4a574;
+    --accent-light: #e8bc7e;
+    --accent-rgb: 212, 165, 116;
+    --ring-track: rgba(212, 165, 116, 0.1);
+    --ring-glow: rgba(212, 165, 116, 0.2);
+    --overlay: rgba(0, 0, 0, 0.6);
+    --particle-color: 212, 165, 116;
+    --sacred-grad-start: rgba(212, 165, 116, 0.15);
+    --sacred-grad-end: rgba(10, 22, 40, 0);
+  }
+
+  [data-theme="dawn"] {
+    --s0: #faf7f2;
+    --s1: #f0ebe2;
+    --s2: 230, 218, 200;
+    --t0: #1a1410;
+    --t1: #3d3428;
+    --t2: #6b5d4e;
+    --t3: #9a8b7a;
+    --t4: #b8a898;
+    --accent: #b07a3a;
+    --accent-light: #c4944e;
+    --accent-rgb: 176, 122, 58;
+    --ring-track: rgba(176, 122, 58, 0.12);
+    --ring-glow: rgba(176, 122, 58, 0.15);
+    --overlay: rgba(0, 0, 0, 0.3);
+    --particle-color: 176, 122, 58;
+    --sacred-grad-start: rgba(176, 122, 58, 0.1);
+    --sacred-grad-end: rgba(250, 247, 242, 0);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--s0);
+    color: var(--t0);
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(var(--accent-rgb), 0.3);
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  .sacred-gradient {
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      var(--sacred-grad-start) 0%,
+      var(--sacred-grad-end) 70%
+    );
+  }
+
+  .glass-card {
+    background: rgba(var(--s2), 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(var(--accent-rgb), 0.12);
+  }
+
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px rgba(var(--accent-rgb), 0.2),
+      0 0 20px rgba(var(--accent-rgb), 0.1);
+  }
+
+  .bg-s0 { background-color: var(--s0); }
+  .bg-s1 { background-color: var(--s1); }
+  .bg-s2 { background-color: rgba(var(--s2), 0.5); }
+  .bg-s2-40 { background-color: rgba(var(--s2), 0.4); }
+  .bg-s2-60 { background-color: rgba(var(--s2), 0.6); }
+  .bg-s2-70 { background-color: rgba(var(--s2), 0.7); }
+
+  .text-t0 { color: var(--t0); }
+  .text-t1 { color: var(--t1); }
+  .text-t2 { color: var(--t2); }
+  .text-t3 { color: var(--t3); }
+  .text-t4 { color: var(--t4); }
+  .text-accent { color: var(--accent); }
+  .text-accent-light { color: var(--accent-light); }
+
+  .bg-accent { background-color: var(--accent); }
+  .bg-accent-light { background-color: var(--accent-light); }
+
+  .border-s2 { border-color: rgba(var(--s2), 0.3); }
+  .border-accent-subtle { border-color: rgba(var(--accent-rgb), 0.12); }
+  .border-accent-med { border-color: rgba(var(--accent-rgb), 0.2); }
+
+  .bg-overlay { background-color: var(--overlay); }
+
+  .from-s0 {
+    --tw-gradient-from: var(--s0);
+    --tw-gradient-to: var(--s0);
+  }
+
+  .hover\:bg-s2-60:hover { background-color: rgba(var(--s2), 0.6); }
+  .hover\:bg-s2-70:hover { background-color: rgba(var(--s2), 0.7); }
+  .hover\:text-t0:hover { color: var(--t0); }
+  .hover\:text-t1:hover { color: var(--t1); }
+  .hover\:bg-accent-light:hover { background-color: var(--accent-light); }
+
+  .focus\:border-accent-med:focus { border-color: rgba(var(--accent-rgb), 0.4); }
+  .focus\:ring-accent-subtle:focus { --tw-ring-color: rgba(var(--accent-rgb), 0.2); }
+
+  .bg-accent\/10 { background-color: rgba(var(--accent-rgb), 0.1); }
+  .bg-accent\/15 { background-color: rgba(var(--accent-rgb), 0.15); }
+  .border-accent\/20 { border-color: rgba(var(--accent-rgb), 0.2); }
+
+  .shadow-accent { box-shadow: 0 10px 25px -5px rgba(var(--accent-rgb), 0.2); }
+}
