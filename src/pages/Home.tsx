@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Heart, Loader2, Search, Moon, Sun } from 'lucide-react';
+import { ChevronRight, Heart, Loader2, Search, Moon, Sun, Lock, User } from 'lucide-react';
 import Background from '../components/Background';
 import OmSymbol from '../components/OmSymbol';
+import AuthModal from '../components/AuthModal';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
 import { supabase } from '../lib/supabase';
 import { trackEvent, AnalyticsEvents } from '../lib/analytics';
@@ -13,11 +15,14 @@ function Home() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { toggle: toggleFav, isFavorite } = useFavorites();
+  const { isAuthenticated, canPlayAsGuest, consumeGuestSession } = useAuth();
 
   const [chants, setChants] = useState<Chant[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'navigate' | null>(null);
 
   useEffect(() => {
     trackEvent(AnalyticsEvents.PAGE_VIEW, null, { page: 'home' });
@@ -25,7 +30,6 @@ function Home() {
       const { data } = await supabase
         .from('chants')
         .select('*')
-        .eq('status', 'published')
         .order('sort_order', { ascending: true });
 
       if (data) setChants(data);
@@ -52,9 +56,39 @@ function Home() {
 
   const selectedChant = chants.find(c => c.id === selectedId);
 
+  function handleChantSelect(chant: Chant) {
+    if (chant.requires_auth && !isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    setSelectedId(chant.id);
+  }
+
   function handleNext() {
     if (!selectedChant) return;
+
+    if (!isAuthenticated) {
+      setPendingAction('navigate');
+      setShowAuthModal(true);
+      return;
+    }
+
     navigate('/count', { state: { chant: selectedChant } });
+  }
+
+  function handleAuthSuccess() {
+    setShowAuthModal(false);
+    if (selectedChant) {
+      navigate('/count', { state: { chant: selectedChant } });
+    }
+  }
+
+  function handleGuestPlay() {
+    setShowAuthModal(false);
+    consumeGuestSession();
+    if (selectedChant) {
+      navigate('/count', { state: { chant: selectedChant, isGuest: true } });
+    }
   }
 
   return (
@@ -71,13 +105,32 @@ function Home() {
                 Naam Japa
               </h1>
             </div>
-            <button
-              onClick={toggleTheme}
-              className="w-10 h-10 rounded-full bg-s2-40 border border-s2 flex items-center justify-center text-t2 hover:text-t0 transition-all active:scale-90"
-              aria-label="Toggle theme"
-            >
-              {theme === 'night' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleTheme}
+                className="w-10 h-10 rounded-full bg-s2-40 border border-s2 flex items-center justify-center text-t2 hover:text-t0 transition-all active:scale-90"
+                aria-label="Toggle theme"
+              >
+                {theme === 'night' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="w-10 h-10 rounded-full bg-accent\/15 border border-accent\/20 flex items-center justify-center text-accent hover:text-accent-light transition-all active:scale-90"
+                  aria-label="Profile"
+                >
+                  <User className="w-4.5 h-4.5" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="h-10 px-4 rounded-full bg-s2-40 border border-s2 flex items-center justify-center gap-1.5 text-t2 hover:text-t0 text-sm transition-all active:scale-95"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign In</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="relative">
@@ -106,13 +159,16 @@ function Home() {
               {filtered.map((chant, i) => {
                 const isSelected = selectedId === chant.id;
                 const fav = isFavorite(chant.id);
+                const isLocked = chant.requires_auth && !isAuthenticated;
 
                 return (
                   <div key={chant.id} className="relative" style={{ animationDelay: `${i * 80}ms` }}>
                     <button
-                      onClick={() => setSelectedId(chant.id)}
+                      onClick={() => handleChantSelect(chant)}
                       className={`w-full text-left rounded-2xl p-5 pr-14 transition-all duration-300 ${
-                        isSelected
+                        isLocked
+                          ? 'bg-s2-40 border border-s2 opacity-75'
+                          : isSelected
                           ? 'glass-card glow-ring scale-[1.01]'
                           : 'bg-s2-40 border border-s2 hover:bg-s2-60 active:scale-[0.98]'
                       }`}
@@ -120,21 +176,25 @@ function Home() {
                       <div className="flex items-center gap-4">
                         <div
                           className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all duration-300 ${
-                            isSelected
+                            isLocked
+                              ? 'border-t4 bg-s2-40'
+                              : isSelected
                               ? 'border-accent-med bg-accent'
                               : 'border-t3'
                           }`}
-                          style={isSelected ? { borderColor: 'var(--accent)', backgroundColor: 'var(--accent)' } : undefined}
+                          style={isSelected && !isLocked ? { borderColor: 'var(--accent)', backgroundColor: 'var(--accent)' } : undefined}
                         >
-                          {isSelected && (
+                          {isLocked ? (
+                            <Lock className="w-3 h-3 text-t4" />
+                          ) : isSelected ? (
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--s0)' }} />
-                          )}
+                          ) : null}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <h3
                             className={`font-display text-lg font-medium transition-colors duration-300 ${
-                              isSelected ? 'text-accent-light' : 'text-t0'
+                              isLocked ? 'text-t3' : isSelected ? 'text-accent-light' : 'text-t0'
                             }`}
                           >
                             {chant.name}
@@ -142,27 +202,36 @@ function Home() {
                           <p className="text-t3 text-sm mt-0.5 truncate">
                             {chant.subtitle}
                           </p>
-                          {chant.has_rounds && (
-                            <span className="inline-block text-[11px] px-2 py-0.5 rounded-full bg-accent\/10 text-accent border border-accent\/20 mt-2">
-                              Rounds available
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {chant.has_rounds && (
+                              <span className="inline-block text-[11px] px-2 py-0.5 rounded-full bg-accent\/10 text-accent border border-accent\/20">
+                                Rounds available
+                              </span>
+                            )}
+                            {isLocked && (
+                              <span className="inline-block text-[11px] px-2 py-0.5 rounded-full bg-s2-60 text-t4 border border-s2">
+                                Sign up to unlock
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </button>
 
-                    <button
-                      onClick={e => {
-                        e.stopPropagation();
-                        toggleFav(chant.id);
-                      }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center text-t3 hover:text-accent transition-all active:scale-90"
-                      aria-label={fav ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Heart
-                        className={`w-4.5 h-4.5 transition-all ${fav ? 'fill-current text-accent' : ''}`}
-                      />
-                    </button>
+                    {!isLocked && (
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          toggleFav(chant.id);
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center text-t3 hover:text-accent transition-all active:scale-90"
+                        aria-label={fav ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        <Heart
+                          className={`w-4.5 h-4.5 transition-all ${fav ? 'fill-current text-accent' : ''}`}
+                        />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -192,6 +261,15 @@ function Home() {
           </button>
         </div>
       </div>
+
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => { setShowAuthModal(false); setPendingAction(null); }}
+          onSuccess={handleAuthSuccess}
+          showGuestOption={canPlayAsGuest && pendingAction === 'navigate'}
+          onGuest={handleGuestPlay}
+        />
+      )}
     </div>
   );
 }

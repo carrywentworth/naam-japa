@@ -12,9 +12,37 @@ export interface Chant {
   category: string;
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
+  requires_auth: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  display_name: string;
+  total_sessions: number;
+  total_chants: number;
+  total_duration_ms: number;
+  current_streak: number;
+  longest_streak: number;
+  last_session_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserSessionRecord {
+  id: string;
+  user_id: string;
+  chant_id: string | null;
+  chant_name: string;
+  mode: string;
+  target_count: number;
+  completed_count: number;
+  duration_ms: number;
+  was_completed: boolean;
+  completed_at: string;
 }
 
 export interface AppConfig {

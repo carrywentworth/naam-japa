@@ -6,7 +6,9 @@ import ProgressRing from '../components/ProgressRing';
 import SpeedControl from '../components/SpeedControl';
 import CompletionPopup from '../components/CompletionPopup';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useAuth } from '../contexts/AuthContext';
 import { trackEvent, AnalyticsEvents, incrementSessionCount } from '../lib/analytics';
+import { saveUserSession } from '../lib/sessionService';
 import type { SessionConfig, SessionResult } from '../types';
 
 function getAudioUrl(chant: { id: string; audio_url: string | null; audio_file_path: string | null } | undefined): string | null {
@@ -22,6 +24,7 @@ function Player() {
   const navigate = useNavigate();
   const location = useLocation();
   const config = (location.state as { config: SessionConfig })?.config;
+  const { user, refreshProfile } = useAuth();
 
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [completionResult, setCompletionResult] = useState<SessionResult | null>(null);
@@ -58,8 +61,11 @@ function Player() {
       durationMs: result.durationMs,
       mode: result.mode,
     });
+    if (user && config?.chant.id) {
+      saveUserSession(user.id, config.chant.id, result).then(() => refreshProfile());
+    }
     setCompletionResult(result);
-  }, [config]);
+  }, [config, user, refreshProfile]);
 
   const {
     isPlaying,
@@ -148,6 +154,9 @@ function Player() {
         durationMs: getElapsedTotal(),
         wasCompleted: false,
       };
+      if (user && config.chant.id) {
+        saveUserSession(user.id, config.chant.id, result).then(() => refreshProfile());
+      }
       setCompletionResult(result);
     } else {
       navigate('/home');
@@ -166,6 +175,9 @@ function Player() {
       durationMs: getElapsedTotal(),
       wasCompleted: true,
     };
+    if (user && config.chant.id) {
+      saveUserSession(user.id, config.chant.id, result).then(() => refreshProfile());
+    }
     setCompletionResult(result);
   }
 
