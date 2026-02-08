@@ -19,23 +19,37 @@ function AdminSetup() {
     setError(null);
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            is_admin: true
-          }
-        }
+      // Use edge function to create admin account with service role key
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-admin`;
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signUpError) {
-        setError(signUpError.message);
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.error?.includes('already exists') || result.error?.includes('duplicate')) {
+          setError('This email is already registered. Please use the login page instead.');
+        } else {
+          setError(result.error || 'Failed to create admin account');
+        }
       } else {
         setSuccess(true);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create admin account');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+
+      if (errorMessage.includes('fetch')) {
+        setError('Network error: Cannot reach Supabase. Please verify your internet connection and Supabase project URL.');
+      } else {
+        setError(`Failed to create admin account: ${errorMessage}`);
+      }
     } finally {
       setSubmitting(false);
     }
