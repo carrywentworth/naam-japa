@@ -1,33 +1,48 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
-import { useAdminAuth } from './useAdminAuth';
+import { Lock, Mail, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import OmSymbol from '../components/OmSymbol';
 
-function AdminLogin() {
-  const { user, loading, error, signIn } = useAdminAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function AdminSetup() {
+  const [email, setEmail] = useState('admin@admin.com');
+  const [password, setPassword] = useState('123456');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
-      </div>
-    );
-  }
-
-  if (user) {
-    return <Navigate to="/admin" replace />;
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSetup(e: React.FormEvent) {
     e.preventDefault();
     if (!email || !password) return;
+
     setSubmitting(true);
-    await signIn(email, password);
-    setSubmitting(false);
+    setError(null);
+
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            is_admin: true
+          }
+        }
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+      } else {
+        setSuccess(true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create admin account');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (success) {
+    return <Navigate to="/admin/login" replace />;
   }
 
   return (
@@ -39,11 +54,11 @@ function AdminLogin() {
               <OmSymbol size={36} className="text-amber-500" />
             </div>
           </div>
-          <h1 className="text-xl font-semibold text-white mb-1">Admin Panel</h1>
-          <p className="text-gray-500 text-sm">Sign in to manage Naam Japa</p>
+          <h1 className="text-xl font-semibold text-white mb-1">Admin Setup</h1>
+          <p className="text-gray-500 text-sm">Create your admin account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSetup} className="space-y-4">
           {error && (
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -76,9 +91,10 @@ function AdminLogin() {
                 onChange={e => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900 border border-gray-800 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all"
                 placeholder="Enter password"
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
             </div>
+            <p className="text-xs text-gray-500 mt-1.5">Minimum 6 characters</p>
           </div>
 
           <button
@@ -89,20 +105,20 @@ function AdminLogin() {
             {submitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Signing in...
+                Creating account...
               </>
             ) : (
-              'Sign In'
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Create Admin Account
+              </>
             )}
           </button>
         </form>
 
-        <div className="text-center mt-6 space-y-2">
-          <a href="/admin/setup" className="block text-amber-500 text-xs hover:text-amber-400 transition-colors">
-            First time? Create admin account
-          </a>
-          <a href="/home" className="block text-gray-500 text-xs hover:text-gray-400 transition-colors">
-            Back to app
+        <div className="text-center mt-6">
+          <a href="/admin/login" className="text-gray-500 text-xs hover:text-gray-400 transition-colors">
+            Already have an account? Sign in
           </a>
         </div>
       </div>
@@ -110,4 +126,4 @@ function AdminLogin() {
   );
 }
 
-export default AdminLogin;
+export default AdminSetup;

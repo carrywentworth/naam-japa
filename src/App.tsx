@@ -9,6 +9,7 @@ import Player from './pages/Player';
 import Completion from './pages/Completion';
 import Profile from './pages/Profile';
 import AdminLogin from './admin/AdminLogin';
+import AdminSetup from './admin/AdminSetup';
 import AdminLayout from './admin/AdminLayout';
 import Dashboard from './admin/Dashboard';
 import ChantList from './admin/ChantList';
@@ -30,6 +31,7 @@ function App() {
               <Route path="/complete" element={<Completion />} />
               <Route path="/profile" element={<Profile />} />
 
+              <Route path="/admin/setup" element={<AdminSetup />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
