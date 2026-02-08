@@ -5,6 +5,8 @@ export function useSEO() {
   const { config } = useAppConfig();
 
   useEffect(() => {
+    if (!config) return;
+
     const seoTitle = config.seo_title as string;
     const seoDescription = config.seo_description as string;
     const seoKeywords = config.seo_keywords as string;
@@ -64,5 +66,5 @@ export function useSEO() {
       }
       metaKeywords.setAttribute('content', seoKeywords);
     }
-  }, [config.seo_title, config.seo_description, config.seo_keywords]);
+  }, [config]);
 }
