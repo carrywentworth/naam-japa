@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppConfigProvider } from './contexts/AppConfigContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { useSEO } from './hooks/useSEO';
 import Splash from './pages/Splash';
 import Home from './pages/Home';
 import CountSelection from './pages/CountSelection';
@@ -17,13 +18,11 @@ import ChantEdit from './admin/ChantEdit';
 import AnalyticsView from './admin/AnalyticsView';
 import ConfigPage from './admin/ConfigPage';
 
-function App() {
+function AppRoutes() {
+  useSEO();
+
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <AppConfigProvider>
-          <BrowserRouter>
-            <Routes>
+    <Routes>
               <Route path="/" element={<Splash />} />
               <Route path="/home" element={<Home />} />
               <Route path="/count" element={<CountSelection />} />
@@ -42,7 +41,17 @@ function App() {
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <AppConfigProvider>
+          <BrowserRouter>
+            <AppRoutes />
           </BrowserRouter>
         </AppConfigProvider>
       </AuthProvider>

@@ -11,6 +11,8 @@ import {
   Gauge,
   Heart,
   Bell,
+  FileText,
+  Hash,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -21,6 +23,9 @@ interface ConfigRow {
 }
 
 const CONFIG_DISPLAY: Record<string, { label: string; icon: typeof Moon; type: 'toggle' | 'text' | 'number' | 'theme' }> = {
+  seo_title: { label: 'SEO Title', icon: FileText, type: 'text' },
+  seo_description: { label: 'SEO Description', icon: FileText, type: 'text' },
+  seo_keywords: { label: 'SEO Keywords', icon: Hash, type: 'text' },
   default_theme: { label: 'Default Theme', icon: Moon, type: 'theme' },
   enable_focus_mode: { label: 'Focus Mode', icon: Eye, type: 'toggle' },
   enable_share_badge: { label: 'Share Badge', icon: Share2, type: 'toggle' },
@@ -171,7 +176,9 @@ function ConfigPage() {
                     type="text"
                     value={String(config.value ?? '')}
                     onChange={e => updateConfigValue(config.key, e.target.value)}
-                    className="w-48 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-amber-500/50 transition-all"
+                    className={`px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-amber-500/50 transition-all ${
+                      config.key.startsWith('seo_') ? 'w-64' : 'w-48'
+                    }`}
                     placeholder="Enter value..."
                   />
                 )}
