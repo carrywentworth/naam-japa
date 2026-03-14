@@ -137,7 +137,7 @@ function CountSelection() {
                 className={`py-4 rounded-xl text-center font-medium transition-all duration-300 ${
                   selectedPreset === value
                     ? 'glass-card glow-ring text-accent-light scale-[1.03]'
-                    : 'bg-s2-40 border border-s2 text-t1 hover:bg-s2-60 active:scale-95'
+                    : 'bg-s2-60 border border-s2 text-t1 hover:bg-s2-70 active:scale-95'
                 }`}
               >
                 <span className="text-lg">{value.toLocaleString()}</span>
@@ -155,7 +155,7 @@ function CountSelection() {
             className={`w-full py-4 rounded-xl text-center font-medium flex items-center justify-center gap-2 transition-all duration-300 mb-6 ${
               isUnlimited
                 ? 'glass-card glow-ring text-accent-light scale-[1.01]'
-                : 'bg-s2-40 border border-s2 text-t1 hover:bg-s2-60 active:scale-95'
+                : 'bg-s2-60 border border-s2 text-t1 hover:bg-s2-70 active:scale-95'
             }`}
           >
             <Infinity className="w-5 h-5" />

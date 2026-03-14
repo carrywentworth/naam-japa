@@ -167,10 +167,10 @@ function Home() {
                       onClick={() => handleChantSelect(chant)}
                       className={`w-full text-left rounded-2xl p-5 pr-14 transition-all duration-300 ${
                         isLocked
-                          ? 'bg-s2-40 border border-s2 opacity-75'
+                          ? 'bg-s2-60 border border-s2 opacity-75'
                           : isSelected
                           ? 'glass-card glow-ring scale-[1.01]'
-                          : 'bg-s2-40 border border-s2 hover:bg-s2-60 active:scale-[0.98]'
+                          : 'bg-s2-60 border border-s2 hover:bg-s2-70 active:scale-[0.98]'
                       }`}
                     >
                       <div className="flex items-center gap-4">

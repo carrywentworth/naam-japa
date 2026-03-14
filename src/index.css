@@ -15,7 +15,7 @@
   [data-theme="night"] {
     --s0: #07101c;
     --s1: #0c1929;
-    --s2: 14, 30, 52;
+    --s2: 28, 62, 108;
     --t0: #eef4fa;
     --t1: #c5d8eb;
     --t2: #8aaac8;
@@ -113,7 +113,7 @@
   .bg-accent { background-color: var(--accent); }
   .bg-accent-light { background-color: var(--accent-light); }
 
-  .border-s2 { border-color: rgba(var(--s2), 0.35); }
+  .border-s2 { border-color: rgba(255, 255, 255, 0.1); }
   .border-accent-subtle { border-color: rgba(var(--accent-rgb), 0.12); }
   .border-accent-med { border-color: rgba(var(--accent-rgb), 0.22); }
 
