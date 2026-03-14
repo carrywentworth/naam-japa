@@ -13,23 +13,23 @@
 
   :root,
   [data-theme="night"] {
-    --s0: #060f1d;
-    --s1: #0a1628;
-    --s2: 22, 42, 62;
-    --t0: #f0f4f8;
-    --t1: #d9e2ec;
-    --t2: #9fb3c8;
-    --t3: #627d98;
-    --t4: #486581;
+    --s0: #07101c;
+    --s1: #0c1929;
+    --s2: 14, 30, 52;
+    --t0: #eef4fa;
+    --t1: #c5d8eb;
+    --t2: #8aaac8;
+    --t3: #567898;
+    --t4: #3d5870;
     --accent: #d4a574;
     --accent-light: #e8bc7e;
     --accent-rgb: 212, 165, 116;
     --ring-track: rgba(212, 165, 116, 0.1);
     --ring-glow: rgba(212, 165, 116, 0.2);
-    --overlay: rgba(0, 0, 0, 0.6);
-    --particle-color: 212, 165, 116;
-    --sacred-grad-start: rgba(212, 165, 116, 0.15);
-    --sacred-grad-end: rgba(10, 22, 40, 0);
+    --overlay: rgba(0, 0, 0, 0.65);
+    --particle-color: 160, 200, 235;
+    --sacred-grad-start: rgba(212, 165, 116, 0.13);
+    --sacred-grad-end: rgba(7, 16, 28, 0);
   }
 
   [data-theme="dawn"] {
@@ -84,15 +84,15 @@
   }
 
   .glass-card {
-    background: rgba(var(--s2), 0.5);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(var(--accent-rgb), 0.12);
+    background: rgba(var(--s2), 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   .glow-ring {
     box-shadow:
-      0 0 0 1px rgba(var(--accent-rgb), 0.2),
-      0 0 20px rgba(var(--accent-rgb), 0.1);
+      0 0 0 1px rgba(var(--accent-rgb), 0.22),
+      0 0 24px rgba(var(--accent-rgb), 0.12);
   }
 
   .bg-s0 { background-color: var(--s0); }
@@ -113,9 +113,9 @@
   .bg-accent { background-color: var(--accent); }
   .bg-accent-light { background-color: var(--accent-light); }
 
-  .border-s2 { border-color: rgba(var(--s2), 0.3); }
+  .border-s2 { border-color: rgba(var(--s2), 0.35); }
   .border-accent-subtle { border-color: rgba(var(--accent-rgb), 0.12); }
-  .border-accent-med { border-color: rgba(var(--accent-rgb), 0.2); }
+  .border-accent-med { border-color: rgba(var(--accent-rgb), 0.22); }
 
   .bg-overlay { background-color: var(--overlay); }
 
@@ -137,5 +137,5 @@
   .bg-accent\/15 { background-color: rgba(var(--accent-rgb), 0.15); }
   .border-accent\/20 { border-color: rgba(var(--accent-rgb), 0.2); }
 
-  .shadow-accent { box-shadow: 0 10px 25px -5px rgba(var(--accent-rgb), 0.2); }
+  .shadow-accent { box-shadow: 0 10px 25px -5px rgba(var(--accent-rgb), 0.22); }
 }
