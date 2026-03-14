@@ -138,4 +138,12 @@
   .border-accent\/20 { border-color: rgba(var(--accent-rgb), 0.2); }
 
   .shadow-accent { box-shadow: 0 10px 25px -5px rgba(var(--accent-rgb), 0.22); }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
