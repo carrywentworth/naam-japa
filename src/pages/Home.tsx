@@ -14,12 +14,18 @@ import MantraGrid from '../components/home/MantraGrid';
 import WideCarousel from '../components/home/WideCarousel';
 import MalaRoundsRow from '../components/home/MalaRoundsRow';
 import AllChantsList from '../components/home/AllChantsList';
+import CollectionSection from '../components/home/CollectionSection';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
 import { supabase } from '../lib/supabase';
 import { trackEvent, AnalyticsEvents } from '../lib/analytics';
-import type { Chant } from '../types';
+import type { Chant, Collection } from '../types';
+
+interface CollectionWithChants {
+  collection: Collection;
+  chants: Chant[];
+}
 
 function Home() {
   const navigate = useNavigate();
@@ -28,6 +34,7 @@ function Home() {
   const { isAuthenticated, canPlayAsGuest, consumeGuestSession } = useAuth();
 
   const [chants, setChants] = useState<Chant[]>([]);
+  const [dbCollections, setDbCollections] = useState<CollectionWithChants[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -36,11 +43,25 @@ function Home() {
   useEffect(() => {
     trackEvent(AnalyticsEvents.PAGE_VIEW, null, { page: 'home' });
     (async () => {
-      const { data } = await supabase
-        .from('chants')
-        .select('*')
-        .order('sort_order', { ascending: true });
-      if (data) setChants(data);
+      const [chantsRes, collectionsRes, junctionRes] = await Promise.all([
+        supabase.from('chants').select('*').order('sort_order', { ascending: true }),
+        supabase.from('collections').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+        supabase.from('collection_chants').select('*').order('sort_order', { ascending: true }),
+      ]);
+      const allChants = (chantsRes.data ?? []) as Chant[];
+      setChants(allChants);
+
+      const chantMap = new Map(allChants.map(c => [c.id, c]));
+      const cols: CollectionWithChants[] = (collectionsRes.data ?? []).map((col: Collection) => {
+        const junctions = (junctionRes.data ?? []).filter(
+          (j: { collection_id: string }) => j.collection_id === col.id,
+        );
+        const colChants = junctions
+          .map((j: { chant_id: string }) => chantMap.get(j.chant_id))
+          .filter((c): c is Chant => c !== undefined);
+        return { collection: col, chants: colChants };
+      });
+      setDbCollections(cols);
       setLoading(false);
     })();
   }, []);
@@ -208,6 +229,17 @@ function Home() {
                 {withRounds.length > 0 && (
                   <MalaRoundsRow chants={withRounds} onTap={tap} />
                 )}
+
+                {dbCollections.map(({ collection, chants: colChants }) => (
+                  <CollectionSection
+                    key={collection.id}
+                    collection={collection}
+                    chants={colChants}
+                    isFavorite={isFavorite}
+                    onTap={tap}
+                    onFav={onFav}
+                  />
+                ))}
 
                 <AllChantsList
                   chants={chants}

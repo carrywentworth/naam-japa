@@ -9,6 +9,8 @@ import {
   Menu,
   X,
   Loader2,
+  Tag,
+  FolderOpen,
 } from 'lucide-react';
 import { useAdminAuth } from './useAdminAuth';
 import OmSymbol from '../components/OmSymbol';
@@ -16,6 +18,8 @@ import OmSymbol from '../components/OmSymbol';
 const NAV_ITEMS = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/admin/chants', icon: Music, label: 'Chants', end: false },
+  { to: '/admin/categories', icon: Tag, label: 'Categories', end: false },
+  { to: '/admin/collections', icon: FolderOpen, label: 'Collections', end: false },
   { to: '/admin/analytics', icon: BarChart3, label: 'Analytics', end: false },
   { to: '/admin/config', icon: Settings, label: 'Settings', end: false },
 ];

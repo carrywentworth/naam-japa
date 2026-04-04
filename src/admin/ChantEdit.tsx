@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import type { Category } from '../types';
 
 interface ChantFormData {
   name: string;
@@ -24,6 +25,7 @@ interface ChantFormData {
   background_video_url: string;
   theme_gradient: string;
   category: string;
+  category_id: string;
   status: string;
   featured: boolean;
   sort_order: number;
@@ -40,6 +42,7 @@ const EMPTY_FORM: ChantFormData = {
   background_video_url: '',
   theme_gradient: '',
   category: '',
+  category_id: '',
   status: 'draft',
   featured: false,
   sort_order: 0,
@@ -67,8 +70,15 @@ function ChantEdit() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    supabase.from('categories').select('*').order('sort_order', { ascending: true }).then(({ data }) => {
+      if (data) setCategories(data);
+    });
+  }, []);
 
   useEffect(() => {
     if (isNew) return;
@@ -97,6 +107,7 @@ function ChantEdit() {
         background_video_url: data.background_video_url ?? '',
         theme_gradient: data.theme_gradient ?? '',
         category: data.category ?? '',
+        category_id: data.category_id ?? '',
         status: data.status ?? 'draft',
         featured: data.featured ?? false,
         sort_order: data.sort_order ?? 0,
@@ -225,6 +236,7 @@ function ChantEdit() {
       background_video_url: form.background_video_url.trim() || null,
       theme_gradient: form.theme_gradient,
       category: form.category.trim(),
+      category_id: form.category_id || null,
       status: form.status,
       featured: form.featured,
       sort_order: form.sort_order,
@@ -306,13 +318,21 @@ function ChantEdit() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-gray-400 mb-1.5">Category</label>
-              <input
-                type="text"
-                value={form.category}
-                onChange={e => updateField('category', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-amber-500/50 transition-all"
-                placeholder="e.g. Vaishnavism"
-              />
+              <select
+                value={form.category_id}
+                onChange={e => {
+                  const catId = e.target.value;
+                  updateField('category_id', catId);
+                  const cat = categories.find(c => c.id === catId);
+                  updateField('category', cat?.name ?? '');
+                }}
+                className="w-full px-3 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-amber-500/50 transition-all"
+              >
+                <option value="">No category</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs text-gray-400 mb-1.5">Sort Order</label>

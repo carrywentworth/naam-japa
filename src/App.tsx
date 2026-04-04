@@ -15,6 +15,10 @@ import AdminLayout from './admin/AdminLayout';
 import Dashboard from './admin/Dashboard';
 import ChantList from './admin/ChantList';
 import ChantEdit from './admin/ChantEdit';
+import CategoryList from './admin/CategoryList';
+import CategoryEdit from './admin/CategoryEdit';
+import CollectionList from './admin/CollectionList';
+import CollectionEdit from './admin/CollectionEdit';
 import AnalyticsView from './admin/AnalyticsView';
 import ConfigPage from './admin/ConfigPage';
 
@@ -36,6 +40,10 @@ function AppRoutes() {
                 <Route index element={<Dashboard />} />
                 <Route path="chants" element={<ChantList />} />
                 <Route path="chants/:id" element={<ChantEdit />} />
+                <Route path="categories" element={<CategoryList />} />
+                <Route path="categories/:id" element={<CategoryEdit />} />
+                <Route path="collections" element={<CollectionList />} />
+                <Route path="collections/:id" element={<CollectionEdit />} />
                 <Route path="analytics" element={<AnalyticsView />} />
                 <Route path="config" element={<ConfigPage />} />
               </Route>
